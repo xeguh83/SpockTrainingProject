@@ -2,6 +2,7 @@ package org.example
 
 import javafx.collections.ObservableList
 import javafx.scene.control.Button
+import spock.lang.Unroll
 
 class TaskManagerSpec extends BaseFxSpec {
 
@@ -38,5 +39,25 @@ class TaskManagerSpec extends BaseFxSpec {
         taskList.items[0] == "[СРОЧНО] Купить молоко (Средний)"
         lookup("#titleInput").queryTextInputControl().text.isEmpty()
         lookup("#addButton").queryButton().isDisabled()
+    }
+
+    @Unroll
+    def "При вводе '#inputText' состояние блокировки кнопки Добавить должно быть #expectedDisabled"() {
+        given: "Открыто главное окно приложения"
+        // окно итак открывается перед каждым тестом
+
+        when: "Добавляем ряд значений в таблицу через текстое поле и кнопку Добавить"
+        if (inputText) clickOn("#titleInput").write(inputText)
+
+        then: "Проверяем доступность кнопки Добавить в зависимости от значения в текстовом поле"
+        lookup("#addButton").queryButton().isDisabled() == expectedDisabled
+
+        where: "Таблица значений параметрического теста"
+        inputText | expectedDisabled
+        ""        | true
+        "   "     | true
+        "АБ"      | true
+        "АБВ"     | false
+        " Задача" | false
     }
 }
