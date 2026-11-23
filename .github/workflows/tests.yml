@@ -1,0 +1,32 @@
+name: JavaFX Spock UI Tests
+
+on:
+  # 1. Автоматический запуск при каждом пуше в ветки main или master
+  push:
+    branches: [ "main", "master" ]
+  # 2. Автоматический запуск при создании Pull Request
+  pull_request:
+    branches: [ "main", "master" ]
+  # 3. Возможность запускать тесты ВРУЧНУЮ кнопкой в интерфейсе GitHub
+  workflow_dispatch:
+
+jobs:
+  run-ui-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Скачиваем код репозитория
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Устанавливаем JDK 21 (Temurin) и включаем кэш Maven для быстрой сборки
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+
+      # Запускаем тесты в Headless-режиме под виртуальным дисплеем Xvfb
+      - name: Run Spock + TestFX tests
+        run: xvfb-run -a mvn test -Dheadless=true
