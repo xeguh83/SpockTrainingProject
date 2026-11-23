@@ -60,4 +60,25 @@ class TaskManagerSpec extends BaseFxSpec {
         "АБВ"     | false
         " Задача" | false
     }
+
+    def "Создание задачи с высоким приоритетом и её удаление после подтверждения"() {
+        given: "Создаём запись в таблице 'Создать отчет' с высоким приоритетом"
+        clickOn("#priorityBox")
+        clickOn("Высокий")
+        clickOn("#titleInput").write("Создать отчет")
+        clickOn("#addButton")
+
+        expect: "Убедится что кнопка Удалить выбранную заблокирована так как строка таблицы не выделена"
+        lookup("#deleteButton").queryButton().isDisabled()
+
+        when: "Выделяем строку в таблице, нажимаем Удалить выбранную и подтверждаем действие в окне Alert"
+        clickOn("Создать отчет (Высокий)")
+        clickOn("#deleteButton")
+        clickOn("Yes")
+
+        then: "Убедится что список пуст, текст статуса 'Задач: 0', а кнопка Удалить выбранную заблокирована"
+        lookup("#taskList").queryListView().items.isEmpty()
+        lookup("#statusLabel").queryLabeled().text == 'Задач: 0'
+        lookup("#deleteButton").queryButton().isDisabled()
+    }
 }
