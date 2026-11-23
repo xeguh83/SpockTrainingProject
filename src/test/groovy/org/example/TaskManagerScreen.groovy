@@ -5,6 +5,7 @@ import javafx.scene.control.Labeled
 import javafx.scene.control.ListView
 import javafx.scene.control.TextInputControl
 import org.testfx.api.FxRobot
+import org.testfx.service.query.NodeQuery
 
 class TaskManagerScreen {
 
@@ -25,6 +26,10 @@ class TaskManagerScreen {
         lookup("#deleteButton").queryButton()
     }
 
+    Button getInfoButton() {
+        lookup("#asyncInfoButton").queryButton()
+    }
+
     TextInputControl getTitleInput() {
         lookup("#titleInput").queryTextInputControl()
     }
@@ -35,6 +40,10 @@ class TaskManagerScreen {
 
     ListView<String> getTaskList() {
         lookup("#taskList").queryListView()
+    }
+
+    NodeQuery getInfoDialog() {
+        lookup("#asyncInfoDialog")
     }
 
     // 2. Бизнес-действия пользователя (высокоуровневые методы)
