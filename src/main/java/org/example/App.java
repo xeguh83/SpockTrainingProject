@@ -48,13 +48,11 @@ public class App extends Application {
         asyncInfoButton.setId("asyncInfoButton");
 
         // 3. Логика UI
-        titleInput.textProperty().addListener((obs, oldVal, newVal) -> {
-            addButton.setDisable(newVal == null || newVal.trim().length() < 3);
-        });
+        titleInput.textProperty().addListener((obs, oldVal, newVal) ->
+                addButton.setDisable(newVal == null || newVal.trim().length() < 3));
 
-        taskList.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
-            deleteButton.setDisable(newVal == null);
-        });
+        taskList.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) ->
+                deleteButton.setDisable(newVal == null));
 
         addButton.setOnAction(e -> {
             String title = titleInput.getText().trim();
