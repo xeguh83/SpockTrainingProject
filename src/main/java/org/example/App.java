@@ -1,12 +1,15 @@
 package org.example;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+
+import java.util.concurrent.CompletableFuture;
 
 public class App extends Application {
 
@@ -27,7 +30,7 @@ public class App extends Application {
 
         Button addButton = new Button("Добавить");
         addButton.setId("addButton");
-        addButton.setDisable(true); // По умолчанию заблокирована
+        addButton.setDisable(true);
 
         // 2. Список задач и статус
         ListView<String> taskList = new ListView<>();
@@ -40,7 +43,11 @@ public class App extends Application {
         deleteButton.setId("deleteButton");
         deleteButton.setDisable(true);
 
-        // 3. Логика UI (валидация и обработчики)
+        // Кнопка асинхронного информационного окна
+        Button asyncInfoButton = new Button("Инфо (500 мс)");
+        asyncInfoButton.setId("asyncInfoButton");
+
+        // 3. Логика UI
         titleInput.textProperty().addListener((obs, oldVal, newVal) -> {
             addButton.setDisable(newVal == null || newVal.trim().length() < 3);
         });
@@ -73,9 +80,26 @@ public class App extends Application {
             }
         });
 
+        // Имитация фоновой операции (500 мс) и показ Alert в FX-потоке
+        asyncInfoButton.setOnAction(e -> {
+            statusLabel.setText("Загрузка...");
+            CompletableFuture.runAsync(() -> {
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException ignored) {
+                }
+                Platform.runLater(() -> {
+                    statusLabel.setText("Инфо получено");
+                    Alert info = new Alert(Alert.AlertType.INFORMATION, "Данные успешно загружены!");
+                    info.getDialogPane().setId("asyncInfoDialog");
+                    info.show();
+                });
+            });
+        });
+
         // 4. Компоновка окна
         HBox inputRow = new HBox(10, titleInput, priorityBox, urgentCheck, addButton);
-        HBox bottomRow = new HBox(10, statusLabel, deleteButton);
+        HBox bottomRow = new HBox(10, statusLabel, deleteButton, asyncInfoButton); // добавили кнопку
         VBox root = new VBox(12, inputRow, taskList, bottomRow);
         root.setPadding(new Insets(15));
 
